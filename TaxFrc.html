@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Tax Forecast</title>
+
+<script src="site_libs/header-attrs-2.26/header-attrs.js"></script>
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+<link rel="stylesheet" href="src/style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+details > summary > p:only-child {
+  display: inline;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark the anchor link active (and if it's in a dropdown, also mark that active)
+  var dropdown = menuAnchor.closest('li.dropdown');
+  if (window.bootstrap) { // Bootstrap 4+
+    menuAnchor.addClass('active');
+    dropdown.find('> .dropdown-toggle').addClass('active');
+  } else { // Bootstrap 3
+    menuAnchor.parent().addClass('active');
+    dropdown.addClass('active');
+  }
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before, .tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "\e259";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "\e258";
+  font-family: 'Glyphicons Halflings';
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-inverse  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-bs-toggle="collapse" data-target="#navbar" data-bs-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Tax Visionary</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="./TaxData.html">
+    <span class="fa fa-line-chart"></span>
+     
+    Tax Data
+  </a>
+</li>
+<li>
+  <a href="./TaxFrc.html">
+    <span class="fa fa-area-chart"></span>
+     
+    Forecast
+  </a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://www.instagram.com/gitauliand/">
+    <span class="fa fa-instagram"></span>
+     
+    Instagram
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+
+
+<h1 class="title toc-ignore">Tax Forecast</h1>
+
+</div>
+
+
+<div id="total-tax-revenue-forecast" class="section level3">
+<h3>| Total Tax Revenue Forecast</h3>
+<pre><code>##      Point Forecast     Lo 80    Hi 80     Lo 95    Hi 95
+## 2024       1517.445 1215.5924 1819.298 1055.8011 1979.089
+## 2025       1780.302 1303.3278 2257.277 1050.8328 2509.771
+## 2026       1826.719 1330.7659 2322.672 1068.2242 2585.214
+## 2027       1681.062 1142.2262 2219.897  856.9840 2505.139
+## 2028       1725.602 1115.0332 2336.171  791.8176 2659.386
+## 2029       1774.229 1126.3080 2422.150  783.3194 2765.138
+## 2030       1730.933 1048.9761 2412.889  687.9701 2773.895
+## 2031       1727.681 1002.0601 2453.301  617.9398 2837.422
+## 2032       1749.666  987.3154 2512.017  583.7513 2915.581
+## 2033       1741.166  946.7029 2535.628  526.1396 2956.192</code></pre>
+<p><img src="TaxFrc_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<table>
+<caption>Total Tax Revenue Forecast</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">Point Forecast</th>
+<th align="right">Lo 80</th>
+<th align="right">Hi 80</th>
+<th align="right">Lo 95</th>
+<th align="right">Hi 95</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2024</td>
+<td align="right">1517.445</td>
+<td align="right">1215.5924</td>
+<td align="right">1819.298</td>
+<td align="right">1055.8011</td>
+<td align="right">1979.089</td>
+</tr>
+<tr class="even">
+<td align="left">2025</td>
+<td align="right">1780.302</td>
+<td align="right">1303.3278</td>
+<td align="right">2257.277</td>
+<td align="right">1050.8328</td>
+<td align="right">2509.771</td>
+</tr>
+<tr class="odd">
+<td align="left">2026</td>
+<td align="right">1826.719</td>
+<td align="right">1330.7659</td>
+<td align="right">2322.672</td>
+<td align="right">1068.2242</td>
+<td align="right">2585.214</td>
+</tr>
+<tr class="even">
+<td align="left">2027</td>
+<td align="right">1681.062</td>
+<td align="right">1142.2262</td>
+<td align="right">2219.897</td>
+<td align="right">856.9840</td>
+<td align="right">2505.139</td>
+</tr>
+<tr class="odd">
+<td align="left">2028</td>
+<td align="right">1725.602</td>
+<td align="right">1115.0332</td>
+<td align="right">2336.171</td>
+<td align="right">791.8176</td>
+<td align="right">2659.386</td>
+</tr>
+<tr class="even">
+<td align="left">2029</td>
+<td align="right">1774.229</td>
+<td align="right">1126.3080</td>
+<td align="right">2422.150</td>
+<td align="right">783.3194</td>
+<td align="right">2765.138</td>
+</tr>
+<tr class="odd">
+<td align="left">2030</td>
+<td align="right">1730.933</td>
+<td align="right">1048.9761</td>
+<td align="right">2412.889</td>
+<td align="right">687.9701</td>
+<td align="right">2773.895</td>
+</tr>
+<tr class="even">
+<td align="left">2031</td>
+<td align="right">1727.681</td>
+<td align="right">1002.0601</td>
+<td align="right">2453.301</td>
+<td align="right">617.9398</td>
+<td align="right">2837.422</td>
+</tr>
+<tr class="odd">
+<td align="left">2032</td>
+<td align="right">1749.666</td>
+<td align="right">987.3154</td>
+<td align="right">2512.017</td>
+<td align="right">583.7513</td>
+<td align="right">2915.581</td>
+</tr>
+<tr class="even">
+<td align="left">2033</td>
+<td align="right">1741.166</td>
+<td align="right">946.7029</td>
+<td align="right">2535.628</td>
+<td align="right">526.1396</td>
+<td align="right">2956.192</td>
+</tr>
+</tbody>
+</table>
+<h4>
+<b>Key Insights</b>
+</h4>
+<p>Based on the analysis of the bar graph forecast from ARIMA(2,1,2) for
+the years 2024-2033, here are suggested steps that companies,
+institutions, or individuals can take for better decision-making:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Understand the Forecasted Trends</strong>: Companies,
+institutions, and individuals should carefully analyze the forecasted
+trends depicted in the graph. By understanding the projected values and
+the associated confidence intervals, stakeholders can anticipate
+potential future scenarios and make informed decisions.</p></li>
+<li><p><strong>Evaluate Risk and Uncertainty</strong>: Given the varying
+levels of uncertainty indicated by the shaded areas around the
+forecasted line, it is crucial to assess the risks associated with the
+predictions. Decision-makers should consider the potential impact of
+uncertain factors on the forecasted values and develop risk mitigation
+strategies accordingly.</p></li>
+<li><p><strong>Scenario Planning</strong>: Engage in scenario planning
+exercises to explore different possible outcomes based on the forecasted
+values. By considering multiple scenarios and their implications,
+organizations can prepare for various future situations and adapt their
+strategies accordingly.</p></li>
+<li><p><strong>Strategic Decision-Making</strong>: Use the forecasted
+data as a basis for strategic decision-making. Companies can align their
+business plans, investment strategies, and resource allocation decisions
+with the anticipated trends to capitalize on opportunities and mitigate
+risks.</p></li>
+<li><p><strong>Continuous Monitoring and Adjustment</strong>: Regularly
+monitor actual performance against the forecasted values and be prepared
+to adjust strategies as needed. Continuous evaluation and adaptation
+based on real-time data can help organizations stay agile and responsive
+to changing market conditions.</p></li>
+<li><p><strong>Invest in Data Analytics</strong>: Enhance data analytics
+capabilities to improve forecasting accuracy and reliability. By
+leveraging advanced analytics tools and techniques, companies can
+generate more precise forecasts and gain deeper insights into future
+trends.</p></li>
+<li><p><strong>Collaboration and Communication</strong>: Foster
+collaboration and communication among stakeholders to ensure alignment
+on decision-making based on the forecasted values. Transparent
+communication of forecasted data and assumptions can facilitate
+consensus-building and collective action.</p></li>
+</ol>
+<hr>
+</div>
+<div id="migas-tax-revenue-forecast" class="section level3">
+<h3>| Migas Tax Revenue Forecast</h3>
+<pre><code>##      Point Forecast      Lo 80     Hi 80       Lo 95    Hi 95
+## 2024       41.82342  20.939840  62.70700   9.8847417  73.7621
+## 2025       40.32685  13.351941  67.30175  -0.9277112  81.5814
+## 2026       66.69337  36.875799  96.51094  21.0913323 112.2954
+## 2027       75.52724  42.276669 108.77781  24.6748799 126.3796
+## 2028       51.80136  12.937232  90.66550  -7.6361976 111.2389
+## 2029       36.41585  -6.953326  79.78502 -29.9115798 102.7433
+## 2030       55.69328  10.166143 101.22041 -13.9344653 125.3210
+## 2031       76.34634  28.953283 123.73940   3.8649137 148.8278
+## 2032       62.95506  12.169419 113.74069 -14.7148728 140.6250
+## 2033       38.71046 -16.077054  93.49798 -45.0798135 122.5007</code></pre>
+<p><img src="TaxFrc_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<table>
+<caption>Migas Tax Revenue Forecast</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">Point Forecast</th>
+<th align="right">Lo 80</th>
+<th align="right">Hi 80</th>
+<th align="right">Lo 95</th>
+<th align="right">Hi 95</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2024</td>
+<td align="right">41.82342</td>
+<td align="right">20.939840</td>
+<td align="right">62.70700</td>
+<td align="right">9.8847417</td>
+<td align="right">73.7621</td>
+</tr>
+<tr class="even">
+<td align="left">2025</td>
+<td align="right">40.32685</td>
+<td align="right">13.351941</td>
+<td align="right">67.30175</td>
+<td align="right">-0.9277112</td>
+<td align="right">81.5814</td>
+</tr>
+<tr class="odd">
+<td align="left">2026</td>
+<td align="right">66.69337</td>
+<td align="right">36.875799</td>
+<td align="right">96.51094</td>
+<td align="right">21.0913323</td>
+<td align="right">112.2954</td>
+</tr>
+<tr class="even">
+<td align="left">2027</td>
+<td align="right">75.52724</td>
+<td align="right">42.276669</td>
+<td align="right">108.77781</td>
+<td align="right">24.6748799</td>
+<td align="right">126.3796</td>
+</tr>
+<tr class="odd">
+<td align="left">2028</td>
+<td align="right">51.80136</td>
+<td align="right">12.937232</td>
+<td align="right">90.66550</td>
+<td align="right">-7.6361976</td>
+<td align="right">111.2389</td>
+</tr>
+<tr class="even">
+<td align="left">2029</td>
+<td align="right">36.41585</td>
+<td align="right">-6.953326</td>
+<td align="right">79.78502</td>
+<td align="right">-29.9115798</td>
+<td align="right">102.7433</td>
+</tr>
+<tr class="odd">
+<td align="left">2030</td>
+<td align="right">55.69328</td>
+<td align="right">10.166143</td>
+<td align="right">101.22041</td>
+<td align="right">-13.9344653</td>
+<td align="right">125.3210</td>
+</tr>
+<tr class="even">
+<td align="left">2031</td>
+<td align="right">76.34634</td>
+<td align="right">28.953283</td>
+<td align="right">123.73940</td>
+<td align="right">3.8649137</td>
+<td align="right">148.8278</td>
+</tr>
+<tr class="odd">
+<td align="left">2032</td>
+<td align="right">62.95506</td>
+<td align="right">12.169420</td>
+<td align="right">113.74069</td>
+<td align="right">-14.7148728</td>
+<td align="right">140.6250</td>
+</tr>
+<tr class="even">
+<td align="left">2033</td>
+<td align="right">38.71046</td>
+<td align="right">-16.077054</td>
+<td align="right">93.49798</td>
+<td align="right">-45.0798135</td>
+<td align="right">122.5007</td>
+</tr>
+</tbody>
+</table>
+<h4>
+<b>Key Insights</b>
+</h4>
+<p>Based on the analysis of the bar graph forecast from ARIMA(2,1,2) for
+the years 2024-2033, here are suggested steps that companies,
+institutions, or individuals can take for better decision-making:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Interpret Forecasted Trends</strong>: Analyze the
+forecasted values beyond 2020 to understand the projected trends in the
+data. Identify any patterns or shifts in the values to anticipate future
+developments.</p></li>
+<li><p><strong>Evaluate Confidence Intervals</strong>: Consider the
+shaded blue area around the forecasted line, which represents the
+confidence intervals. Assess the level of uncertainty associated with
+the predictions and factor this into decision-making processes.</p></li>
+<li><p><strong>Risk Assessment and Mitigation</strong>: Evaluate the
+risks associated with the forecasted values and develop mitigation
+strategies to address potential challenges. Identify key risk factors
+that could impact the accuracy of the forecasts.</p></li>
+<li><p><strong>Strategic Planning</strong>: Utilize the forecasted data
+as a basis for strategic planning and decision-making. Align business
+strategies, resource allocation, and investment decisions with the
+anticipated trends to optimize outcomes.</p></li>
+<li><p><strong>Scenario Analysis</strong>: Conduct scenario analysis to
+explore different possible outcomes based on the forecasted values.
+Develop contingency plans for various scenarios to enhance preparedness
+and resilience.</p></li>
+<li><p><strong>Data-Driven Decision-Making</strong>: Emphasize
+data-driven decision-making by leveraging advanced analytics tools and
+techniques to enhance forecasting accuracy. Invest in data analytics
+capabilities to improve the reliability of future predictions.</p></li>
+<li><p><strong>Stakeholder Engagement</strong>: Engage stakeholders in
+discussions about the forecasted trends and involve them in
+decision-making processes. Foster collaboration and communication to
+ensure alignment and consensus on strategic actions.</p></li>
+<li><p><strong>Continuous Monitoring and Adjustment</strong>:
+Continuously monitor actual performance against the forecasted values
+and be prepared to adjust strategies in response to changing conditions.
+Stay agile and adaptive to navigate uncertainties effectively.</p></li>
+</ol>
+<hr>
+</div>
+<div id="non-migas-tax-revenue-forecast" class="section level3">
+<h3>| Non-Migas Tax Revenue Forecast</h3>
+<pre><code>##      Point Forecast     Lo 80    Hi 80     Lo 95    Hi 95
+## 2024       1785.552 1648.1687 1922.935 1575.4424 1995.661
+## 2025       1707.404 1363.2049 2051.603 1180.9969 2233.811
+## 2026       1716.554 1219.6208 2213.487  956.5603 2476.548
+## 2027       1754.331 1188.4755 2320.186  888.9298 2619.732
+## 2028       1748.960 1129.5114 2368.409  801.5949 2696.326
+## 2029       1730.722 1044.5478 2416.897  681.3090 2780.135
+## 2030       1733.778  983.6115 2483.945  586.4972 2881.059
+## 2031       1742.572  941.1490 2543.995  516.9012 2968.243
+## 2032       1740.872  892.3939 2589.350  443.2369 3038.507
+## 2033       1736.637  840.2898 2632.984  365.7923 3107.482</code></pre>
+<p><img src="TaxFrc_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<table>
+<caption>Non-Migas Tax Revenue Forecast</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">Point Forecast</th>
+<th align="right">Lo 80</th>
+<th align="right">Hi 80</th>
+<th align="right">Lo 95</th>
+<th align="right">Hi 95</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2024</td>
+<td align="right">1785.552</td>
+<td align="right">1648.1687</td>
+<td align="right">1922.935</td>
+<td align="right">1575.4424</td>
+<td align="right">1995.661</td>
+</tr>
+<tr class="even">
+<td align="left">2025</td>
+<td align="right">1707.404</td>
+<td align="right">1363.2049</td>
+<td align="right">2051.603</td>
+<td align="right">1180.9969</td>
+<td align="right">2233.811</td>
+</tr>
+<tr class="odd">
+<td align="left">2026</td>
+<td align="right">1716.554</td>
+<td align="right">1219.6208</td>
+<td align="right">2213.487</td>
+<td align="right">956.5603</td>
+<td align="right">2476.548</td>
+</tr>
+<tr class="even">
+<td align="left">2027</td>
+<td align="right">1754.331</td>
+<td align="right">1188.4755</td>
+<td align="right">2320.186</td>
+<td align="right">888.9298</td>
+<td align="right">2619.732</td>
+</tr>
+<tr class="odd">
+<td align="left">2028</td>
+<td align="right">1748.960</td>
+<td align="right">1129.5114</td>
+<td align="right">2368.409</td>
+<td align="right">801.5949</td>
+<td align="right">2696.326</td>
+</tr>
+<tr class="even">
+<td align="left">2029</td>
+<td align="right">1730.722</td>
+<td align="right">1044.5478</td>
+<td align="right">2416.897</td>
+<td align="right">681.3090</td>
+<td align="right">2780.135</td>
+</tr>
+<tr class="odd">
+<td align="left">2030</td>
+<td align="right">1733.778</td>
+<td align="right">983.6115</td>
+<td align="right">2483.945</td>
+<td align="right">586.4972</td>
+<td align="right">2881.059</td>
+</tr>
+<tr class="even">
+<td align="left">2031</td>
+<td align="right">1742.572</td>
+<td align="right">941.1490</td>
+<td align="right">2543.995</td>
+<td align="right">516.9012</td>
+<td align="right">2968.243</td>
+</tr>
+<tr class="odd">
+<td align="left">2032</td>
+<td align="right">1740.872</td>
+<td align="right">892.3939</td>
+<td align="right">2589.350</td>
+<td align="right">443.2369</td>
+<td align="right">3038.507</td>
+</tr>
+<tr class="even">
+<td align="left">2033</td>
+<td align="right">1736.637</td>
+<td align="right">840.2898</td>
+<td align="right">2632.984</td>
+<td align="right">365.7923</td>
+<td align="right">3107.482</td>
+</tr>
+</tbody>
+</table>
+<h4>
+<b>Key Insights</b>
+</h4>
+<p>Based on the analysis of the bar graph forecast from ARIMA(2,1,2) for
+the years 2024-2033, here are suggested steps that companies,
+institutions, or individuals can take for better decision-making:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Evaluate Historical Trends</strong>: Analyze the
+historical data points leading up to 2020 to understand past trends and
+patterns. Identify any key factors that influenced the data and assess
+their impact on the forecast.</p></li>
+<li><p><strong>Understand Forecasted Stability</strong>: Note the flat
+forecasted trend from 2020 to 2030 and the increasing uncertainty
+represented by the shaded area. Consider the implications of a stable
+forecast and plan accordingly for potential changes.</p></li>
+<li><p><strong>Risk Management</strong>: Assess the increasing
+uncertainty in the forecast and develop risk management strategies to
+mitigate the impact of unexpected events or fluctuations. Identify
+potential risks that could affect the forecasted values.</p></li>
+<li><p><strong>Resource Allocation</strong>: Use the forecasted values
+as a guide for resource allocation and investment decisions. Allocate
+resources based on the anticipated trends to optimize performance and
+achieve strategic objectives.</p></li>
+<li><p><strong>Scenario Planning</strong>: Conduct scenario planning
+exercises to explore different outcomes based on the forecasted values.
+Develop contingency plans for various scenarios to enhance preparedness
+and flexibility.</p></li>
+<li><p><strong>Communication and Collaboration</strong>: Foster open
+communication and collaboration within the organization or institution
+to ensure alignment on decision-making processes. Engage stakeholders in
+discussions about the forecasted trends and solicit input for informed
+decisions.</p></li>
+<li><p><strong>Continuous Monitoring</strong>: Continuously monitor the
+actual performance against the forecasted values and adjust strategies
+as needed. Stay vigilant to changes in the external environment and be
+prepared to adapt to evolving circumstances.</p></li>
+<li><p><strong>Data-Driven Decision-Making</strong>: Emphasize
+data-driven decision-making by leveraging advanced analytics tools and
+techniques to enhance forecasting accuracy. Invest in data analytics
+capabilities to improve the reliability of future predictions.</p></li>
+</ol>
+<hr>
+</div>
+<div id="customs-and-excise-revenue-forecast" class="section level3">
+<h3>| Customs and Excise Revenue Forecast</h3>
+<pre><code>##      Point Forecast    Lo 80    Hi 80      Lo 95    Hi 95
+## 2024       279.5619 197.7590 361.3648 154.455159 404.6686
+## 2025       327.9734 219.4757 436.4711 162.040492 493.9063
+## 2026       349.9231 232.2333 467.6130 169.932097 529.9142
+## 2027       360.1121 216.8533 503.3709 141.016669 579.2075
+## 2028       372.7788 199.5139 546.0438 107.792931 637.7647
+## 2029       398.9349 197.0081 600.8618  90.114430 707.7554
+## 2030       414.4186 184.8535 643.9837  63.329083 765.5081
+## 2031       431.9873 169.1715 694.8031  30.045203 833.9294
+## 2032       448.7993 152.2780 745.3205  -4.690823 902.2894
+## 2033       468.9264 137.1886 800.6641 -38.422702 976.2754</code></pre>
+<p><img src="TaxFrc_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<table>
+<caption>Customs and Excise Revenue Forecast</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="right">Point Forecast</th>
+<th align="right">Lo 80</th>
+<th align="right">Hi 80</th>
+<th align="right">Lo 95</th>
+<th align="right">Hi 95</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2024</td>
+<td align="right">279.5619</td>
+<td align="right">197.7590</td>
+<td align="right">361.3648</td>
+<td align="right">154.455159</td>
+<td align="right">404.6686</td>
+</tr>
+<tr class="even">
+<td align="left">2025</td>
+<td align="right">327.9734</td>
+<td align="right">219.4757</td>
+<td align="right">436.4711</td>
+<td align="right">162.040492</td>
+<td align="right">493.9063</td>
+</tr>
+<tr class="odd">
+<td align="left">2026</td>
+<td align="right">349.9231</td>
+<td align="right">232.2333</td>
+<td align="right">467.6130</td>
+<td align="right">169.932097</td>
+<td align="right">529.9142</td>
+</tr>
+<tr class="even">
+<td align="left">2027</td>
+<td align="right">360.1121</td>
+<td align="right">216.8533</td>
+<td align="right">503.3709</td>
+<td align="right">141.016669</td>
+<td align="right">579.2075</td>
+</tr>
+<tr class="odd">
+<td align="left">2028</td>
+<td align="right">372.7788</td>
+<td align="right">199.5139</td>
+<td align="right">546.0438</td>
+<td align="right">107.792931</td>
+<td align="right">637.7647</td>
+</tr>
+<tr class="even">
+<td align="left">2029</td>
+<td align="right">398.9349</td>
+<td align="right">197.0081</td>
+<td align="right">600.8618</td>
+<td align="right">90.114429</td>
+<td align="right">707.7554</td>
+</tr>
+<tr class="odd">
+<td align="left">2030</td>
+<td align="right">414.4186</td>
+<td align="right">184.8535</td>
+<td align="right">643.9837</td>
+<td align="right">63.329083</td>
+<td align="right">765.5081</td>
+</tr>
+<tr class="even">
+<td align="left">2031</td>
+<td align="right">431.9873</td>
+<td align="right">169.1715</td>
+<td align="right">694.8031</td>
+<td align="right">30.045203</td>
+<td align="right">833.9294</td>
+</tr>
+<tr class="odd">
+<td align="left">2032</td>
+<td align="right">448.7993</td>
+<td align="right">152.2780</td>
+<td align="right">745.3205</td>
+<td align="right">-4.690823</td>
+<td align="right">902.2894</td>
+</tr>
+<tr class="even">
+<td align="left">2033</td>
+<td align="right">468.9264</td>
+<td align="right">137.1886</td>
+<td align="right">800.6641</td>
+<td align="right">-38.422702</td>
+<td align="right">976.2754</td>
+</tr>
+</tbody>
+</table>
+<h4>
+<b>Key Insights</b>
+</h4>
+<p>Based on the analysis of the bar graph forecast from ARIMA(2,1,2) for
+the years 2024-2033, here are suggested steps that companies,
+institutions, or individuals can take for better decision-making:</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>Historical Data Review</strong>: Analyze the historical
+data up to 2020 to identify trends and patterns that can provide
+insights into future forecasts.</p></li>
+<li><p><strong>Forecast Understanding</strong>: Understand the
+forecasted values from 2020 to 2030 and the associated confidence
+interval. Recognize the increasing uncertainty in the forecast as time
+progresses.</p></li>
+<li><p><strong>Risk Assessment</strong>: Evaluate the potential risks
+associated with the forecasted values and develop risk mitigation
+strategies to address uncertainties.</p></li>
+<li><p><strong>Resource Planning</strong>: Utilize the forecasted values
+to allocate resources effectively and make informed decisions about
+investments and operational strategies.</p></li>
+<li><p><strong>Scenario Analysis</strong>: Conduct scenario analysis
+based on different outcomes of the forecast to prepare for various
+potential situations and develop contingency plans.</p></li>
+<li><p><strong>Stakeholder Engagement</strong>: Engage stakeholders in
+discussions about the forecasted trends and involve them in
+decision-making processes to ensure alignment and collective
+understanding.</p></li>
+<li><p><strong>Monitoring and Adaptation</strong>: Continuously monitor
+actual performance against the forecasted values and be prepared to
+adapt strategies based on changing circumstances.</p></li>
+<li><p><strong>Data-Driven Decisions</strong>: Emphasize data-driven
+decision-making by leveraging advanced analytics tools to enhance
+forecasting accuracy and improve strategic planning.</p></li>
+</ol>
+<br><br>
+<p>
+Copyright © 2024 TaxVisionary, Inc. All rights reserved.
+</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
